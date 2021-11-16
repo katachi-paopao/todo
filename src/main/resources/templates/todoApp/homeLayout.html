@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" xmlns:layout="http://ultraq.net.nz/thymleaf/layout">
+<head>
+	<meta charset="UTF-8">
+	<meta th:name="${_csrf.parameterName}" th:content="${_csrf.token}" />
+	<link th:href="@{/webjars/bootstrap/5.0.1/css/bootstrap.min.css}" rel="stylesheet"></link>
+	<script th:src="@{/webjars/bootstrap/5.0.1/js/bootstrap.min.js}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
+	<script src="https://unpkg.com/vue-multiselect@2.1.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<link th:href="@{/css/common.css}" rel="stylesheet"></link>
+	<link th:href="@{/css/sortIcon.css}" rel="stylesheet"></link>
+	<link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css">
+	<link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
+	<title>TODOホーム</title>
+</head>
+<body class="nav-added">
+	<nav class="navbar navbar-expand fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header float-start">
+				<h1><a th:href="@{/todo}">TODO : ホーム</a></h1>
+			</div>
+			<form method="post" th:action="@{/logout}">
+				<label><span class="fs-5 fw-bold" th:text="${#authentication.getPrincipal().getLastName()} + ' ' + ${#authentication.getPrincipal().getFirstName()} + '(' + ${#authentication.name} + ')'"></span> さんでログイン中</label><br>
+				<button class="btn btn-primary float-end" id="logout" type="submit"><i class="fa fa-sign-out-alt" aria-hidden="true"></i>ログアウト</button>
+			</form>
+		</div>
+	</nav>
+	<div class="container-fluid no-gutters">
+		<div class="row no-gutters">
+			<div class="todo-side-bar col-3 no-gutters">
+				<div class="container-fluid list-group no-gutters">
+					<a class="list-group-item list-group-item-action sidebar-menu-item rounded-0" href="#" id="registerButton" data-bs-toggle="modal" data-bs-target="#work-register">
+						<i class="fa fa-plus" aria-hidden="true"></i>新規登録
+					</a>
+					<a class="list-group-item list-group-item-action sidebar-menu-item rounded-0" th:href="@{/todo/userEdit/__${#authentication.getPrincipal().getId()}__}">
+						<i class="fa fa-user" aria-hidden="true"></i>ユーザ情報の変更
+					</a>
+					<a class="list-group-item list-group-item-action sidebar-menu-item rounded-0" onclick="document.getElementById('logout').click()">
+						<i class="fa fa-sign-out-alt" aria-hidden="true"></i>ログアウト
+					</a>
+				</div>
+			</div>
+			<div class="col-9">
+				<div th:include="__${contents}__" id = "todoContents"></div>
+			</div>
+			<!--  新規登録画面のモーダルウィンドウ -->
+			<div class="modal" id="work-register" tabindex="-1" aria-labelledby="button_register">
+				<div class="modal-dialog modal-dialog-scrollable">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h1 class="modal-title">作業登録</h1>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<form method="post" id="work-register-form" th:action="@{/todo/workRegister}" th:object="${workRegisterForm}">
+								<div class="form-group">
+									<label class="form-label">作業名</label>
+									<input type="text" class="form-control" th:name="name" v-model="name" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
+									<span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+									<errors :errors="errors.name"></errors>
+								</div>
+								<div class="form-group">
+									<label class="form-label">作業詳細</label>
+									<textarea class="form-control" th:name="detail" th:classappend="${#fields.hasErrors('detail')} ? 'is-invalid'"></textarea>
+									<span class="text-danger" th:if="${#fields.hasErrors('detail')}" th:errors="*{detail}"></span>
+								</div>
+								<div class="form-group">
+									<label class="form-label">期限日</label>
+									<input type="date" class="form-control" th:name="deadlineDate" th:classappend="${#fields.hasErrors('deadlineDate')} ? 'is-invalid'">
+									<span class="text-danger" th:if="${#fields.hasErrors('deadlineDate')}" th:errors="*{deadlineDate}"></span>
+								</div>
+								<div class="form-group">
+									<label class="form-label">作業担当者</label>
+									<input type="hidden" name="worker" :value="selected.map(item => item.id)">
+									<multiselect v-model="selected" :options="workerList" :multiple="true" :custom-label="fullName" placeholder="担当者を選択してください" track-by="id"></multiselect>
+									<span class="text-danger" th:if="${#fields.hasErrors('worker')}" th:errors="*{worker}"></span>
+									<errors :errors="errors.selected"></errors>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+					        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+					        <button type="submit" class="btn btn-primary" form="work-register-form" @click="checkForm">登録</button>
+	     					</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<script th:inline="javascript">
+	let user = /*[[${#authentication.getPrincipal().getLastName()} + ${#authentication.getPrincipal().getFirstName()}]]*/
+	let csrfToken = /*[[${_csrf.token}]]*/ ;
+</script>
+<script th:src="@{/js/todoMain.js}"></script>
+<script th:src="@{/js/workRegisterValidation.js}"></script>
+</body>
+</html>

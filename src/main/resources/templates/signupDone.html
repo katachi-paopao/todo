@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" xmlns:layout="http://ultraq.net.nz/thymleaf/layout">
+<head>
+	<meta charset="UTF-8">
+	<meta name="robots" content="noindex,nofollow">
+  	<meta name="viewport" content="width=device-width">
+	<link th:href="@{/webjars/bootstrap/5.0.1/css/bootstrap.min.css}" rel="stylesheet"></link>
+	<script th:src="@{/webjars/bootstrap/5.0.1/js/bootstrap.min.js}"></script>
+	<link th:href="@{/css/login.css}" rel="stylesheet"></link>
+	<link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
+	<title>TODO登録完了</title>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="loginForm mx-auto">
+			<h1>TODO : 登録完了</h1>
+			<label><i class="fa fa-envelope" aria-hidden="true"></i>登録メールアドレス:</label>
+			<p class="confirm__text" th:text="${signupForm.getMail()}"></p>
+			<label><i class="fa fa-user-alt" aria-hidden="true"></i>登録氏名:</label>
+			<p class="confirm__text" th:text="${signupForm.getLastName()} + ' ' + ${signupForm.getFirstName()}"></p>
+
+			<div class="mt-2">
+				<label class="text-danger form-label confirm__text">上記内容で登録されました</label><br>
+				<button class="btn btn-primary" th:onclick='location.href="/login"'>ログイン画面に戻る</button>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

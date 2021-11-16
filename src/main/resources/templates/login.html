@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="robots" content="noindex,nofollow">
+  	<meta name="viewport" content="width=device-width">
+	<link th:href="@{/webjars/bootstrap/5.0.1/css/bootstrap.min.css}" rel="stylesheet"></link>
+	<link th:href="@{/css/login.css}" rel="stylesheet">
+	<link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
+	<script th:src="@{/webjars/bootstrap/5.0.1/js/bootstrap.min.js}"></script>
+	<title>TODOログイン</title>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="loginForm mx-auto">
+			<div>
+				<h1>TODO : ログイン</h1>
+			</div>
+			<form method="post" th:action="@{/login}">
+				<div class="form-group">
+					<div class="loginFormGroup">
+						<label class="form-label"><i class="fa fa-envelope" aria-hidden="true"></i>メールアドレス:</label>
+						<input type="text" class="form-control" name="mail" size="48">
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="loginFormGroup">
+						<label class="form-label"><i class="fa fa-key" aria-hidden="true"></i>パスワード:</label>
+						<input type="password" class="form-control" name="password" size="48">
+					</div>
+				</div>
+				<div>
+					<p class="text-danger" th:if="${errMsg}" th:text="${errMsg}"></p>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary mt-2 loginPageButton"><i class="fa fa-sign-in-alt" aria-hidden="true"></i>ログイン</button>
+				</div>
+				<div class="form-group">
+					<button type="button" onclick="location.href='/signup'" class="btn btn-primary mt-2 loginPageButton"><i class="fa fa-user-plus" aria-hidden="true"></i>新規登録</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

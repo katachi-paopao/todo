@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<link th:href="@{/webjars/bootstrap/5.0.1/css/bootstrap.min.css}" rel="stylesheet"></link>
+	<script th:src="@{/webjars/bootstrap/5.0.1/js/bootstrap.min.js}"></script>
+	<link th:href="@{/css/login.css}" rel="stylesheet">
+	<title>FORBIDDEN</title>
+</head>
+<body>
+<body>
+	<div class="container-fluid login-form-container">
+		<div class="login-form">
+			<div class="text-center">
+				<h1>403 : ページへのアクセス権限がありません </h1>
+			</div>
+			<div class="container-fluid">
+				<h1 th:text="${message}"></h1>
+			</div>
+		</div>
+	</div>
+</body>

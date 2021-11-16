@@ -1,0 +1,38 @@
+@charset "UTF-8";
+
+.loginForm {
+	width: 75%;
+	background-Color: #CCEECC;
+	margin: 50px 0;
+	padding: 40px;
+	border-radius: 30px;
+	text-align: center;
+	font-size: 16px;
+}
+
+.loginFormGroup {
+	display: inline-block;
+	text-align: left
+}
+
+.loginPageButton {
+	width: 10em;
+}
+
+.confirm__text {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+h1 {
+	color: #444444;
+}
+
+input[type="button"],
+input[type="submit"]{
+	margin-top:	10px;
+}
+
+.fa {
+	margin-right:	10px;
+}

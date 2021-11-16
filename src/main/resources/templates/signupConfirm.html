@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" xmlns:layout="http://ultraq.net.nz/thymleaf/layout">
+<head>
+	<meta charset="UTF-8">
+	<meta name="robots" content="noindex,nofollow">
+  	<meta name="viewport" content="width=device-width">
+	<link th:href="@{/webjars/bootstrap/5.0.1/css/bootstrap.min.css}" rel="stylesheet"></link>
+	<script th:src="@{/webjars/bootstrap/5.0.1/js/bootstrap.min.js}"></script>
+	<link th:href="@{/css/login.css}" rel="stylesheet">
+	<link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
+	<title>TODO登録確認</title>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="loginForm mx-auto">
+			<div class="text-center">
+				<h1>TODO : 登録確認</h1>
+			</div>
+			<form method="post" th:action="@{/register}" th:object="${signupForm}">
+				<input type="hidden" th:field="*{mail}">
+				<input type="hidden" th:field="*{password}">
+				<input type="hidden" th:field="*{lastName}">
+				<input type="hidden" th:field="*{firstName}">
+
+				<label><i class="fa fa-envelope" aria-hidden="true"></i>登録メールアドレス:</label>
+				<p class="confirm__text" th:text="${signupForm.getMail()}"></p>
+				<label><i class="fa fa-user-alt" aria-hidden="true"></i>登録氏名:</label>
+				<p class="confirm__text" th:text="${signupForm.getLastName()} + ' ' + ${signupForm.getFirstName()}"></p>
+
+				<div class="mt-2">
+					<label class="text-danger form-label confirm__text">この内容で登録しますか？</label><br>
+					<input type="submit" class="btn btn-danger" value="修正する" name="fix"><br>
+					<input type="submit" class="btn btn-primary" value="確定する" name="register">
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

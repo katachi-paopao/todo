@@ -1,0 +1,20 @@
+@charset "UTF-8";
+
+th.sort {
+	cursor: pointer;
+}
+
+th.sort::after {
+	margin-left:	6px;
+	content: "▶";
+}
+
+th.sort.asc::after {
+	margin-left:	6px;
+	content: "▲";
+}
+
+th.sort.desc::after {
+	margin-left:	6px;
+	content: "▼";
+}

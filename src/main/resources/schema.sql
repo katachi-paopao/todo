@@ -1,0 +1,25 @@
+CREATE TABLE IF NOT EXISTS user_master (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	mail VARCHAR(100) NOT NULL UNIQUE,
+	lastName VARCHAR(30) NOT NULL,
+	firstName VARCHAR(30) NOT NULL,
+	password CHAR(60) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS work (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	status INT NOT NULL,
+	name VARCHAR(50) NOT NULL,
+	detail VARCHAR(1200),
+	deadline_date DATE,
+	completion_date DATE,
+	version INT
+);
+
+CREATE TABLE IF NOT EXISTS worker (
+	work_id INT,
+	user_id INT,
+	PRIMARY KEY (work_id, user_id),
+	FOREIGN KEY (work_id) REFERENCES work(id) ON DELETE CASCADE,
+	FOREIGN KEY (user_id) REFERENCES user_master(id) ON DELETE CASCADE
+);

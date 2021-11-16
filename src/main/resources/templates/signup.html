@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="robots" content="noindex,nofollow">
+  	<meta name="viewport" content="width=device-width">
+	<link th:href="@{/webjars/bootstrap/5.0.1/css/bootstrap.min.css}" rel="stylesheet"></link>
+	<link th:href="@{/css/login.css}" rel="stylesheet">
+	<link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
+	<script th:src="@{/webjars/bootstrap/5.0.1/js/bootstrap.min.js}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<title>TODO新規登録</title>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="loginForm mx-auto">
+			<div>
+				<h1>TODO : 新規登録</h1>
+			</div>
+			<div id="app">
+				<form method="post" th:action="@{/signup}" th:object="${signupForm}">
+					<div class="form-group" th:classappend="${#fields.hasErrors('mail')} ? 'has-error'">
+						<div class="loginFormGroup">
+							<label class="form-label"><i class="fa fa-envelope" aria-hidden="true"></i>メールアドレス（必須）:</label>
+							<input type="text" class="form-control" th:field="*{mail}" size="48" v-model="mail">
+							<errors :errors="errors.mail"></errors>
+							<span class="text-danger" th:if="${#fields.hasErrors('mail')}" th:errors="*{mail}"></span>
+							<span class="text-danger" th:if="${mailDuplicated}" th:text="${mailDuplicated}"></span>
+						</div>
+					</div>
+					<div class="form-group" th:classappend="${#fields.hasErrors('password')} ? 'has-error'">
+						<div class="loginFormGroup">
+							<label class="form-label"><i class="fa fa-key" aria-hidden="true"></i>パスワード（必須）:</label>
+							<input type="password" class="form-control" th:field="*{password}" size="48" v-model="password">
+							<errors :errors="errors.password"></errors>
+							<span class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="loginFormGroup">
+							<label class="form-label"><i class="fa fa-key" aria-hidden="true"></i>パスワード（もう1度入力）:</label>
+							<input type="password" class="form-control" th:field="*{confirmPassword}" size="48" v-model="confirmPassword">
+							<errors :errors="errors.confirmPassword"></errors>
+							<span class="text-danger" th:if="${passwordMismatch}" th:text="${passwordMismatch}"></span>
+						</div>
+					</div>
+					<div class="form-group loginFormGroup" th:classappend="${#fields.hasErrors('lastName')} ? 'has-error'">
+						<label class="form-label"><i class="fa fa-pen" aria-hidden="true"></i>姓（必須）:</label>
+						<input type="text" class="form-control" size="20" th:field="*{lastName}" v-model="lastName">
+						<errors :errors="errors.lastName"></errors>
+						<span class="text-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></span>
+					</div>
+					<div class="form-group loginFormGroup" th:classappend="${#fields.hasErrors('firstName')} ? 'has-error'">
+						<label class="form-label"><i class="fa fa-pen" aria-hidden="true"></i>名（必須）:</label>
+						<input type="text" class="form-control" size="20" th:field="*{firstName}" v-model="firstName">
+						<errors :errors="errors.firstName"></errors>
+						<span class="text-danger" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></span>
+					</div>
+					<div class="form-group">
+						<input type="submit" value="登録" class="btn btn-primary" @click="checkForm">
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<script th:src="@{/js/signupValidation.js}"></script>
+</body>
+</html>

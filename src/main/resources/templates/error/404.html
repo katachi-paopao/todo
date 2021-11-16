@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<link th:href="@{/webjars/bootstrap/5.0.1/css/bootstrap.min.css}" rel="stylesheet"></link>
+	<script th:src="@{/webjars/bootstrap/5.0.1/js/bootstrap.min.js}"></script>
+	<link th:href="@{/css/login.css}" rel="stylesheet">
+	<title>PAGE NOT FOUND</title>
+</head>
+<body>
+<body>
+	<div class="container-fluid">
+		<div class="loginForm mx-auto">
+			<h1>404 : ページが見つかりません </h1>
+			<div class="container-fluid">
+				<h1 th:text="${message}"></h1>
+			</div>
+		</div>
+	</div>
+</body>

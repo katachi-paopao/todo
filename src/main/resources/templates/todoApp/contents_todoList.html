@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" xmlns:layout="http://ultraq.net.nz/thymleaf/layout">
+<head>
+	<meta charset="UTF-8">
+	<title>TODOリスト</title>
+</head>
+<body>
+	<div th:fragment="todoList" id="todoList">
+	<!--  詳細画面のモーダルウィンドウ -->
+	<div class="modal" id="work-detail" tabindex="-1" aria-labelledby="button_register">
+		<div class="modal-dialog modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title" v-if="!detailModal.editMode">詳細</h1>
+					<h1 class="modal-title" v-if="detailModal.editMode">編集</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeDetail"></button>
+				</div>
+				<div class="modal-body">
+					<div>
+						<h4>作業詳細:</h4>
+						<div v-if="!detailModal.editMode">
+							<p>{{detailModal.workDetail}}</p>
+						</div>
+						<div v-if="detailModal.editMode">
+							<textarea class="form-control" v-model="detailModal.workDetail"></textarea>
+						</div>
+					</div>
+					<div>
+						<h4>作業状態:</h4>
+						<div v-if="!detailModal.editMode">
+							<p v-if="detailModal.workStatus == statusCodeMap['yet']">未完了</p>
+							<p v-if="detailModal.workStatus == statusCodeMap['done']">完了済</p>
+							<p v-if="detailModal.workStatus == statusCodeMap['suspended']">保留</p>
+						</div>
+						<div v-if="detailModal.editMode">
+							<div class="form-group">
+								<input class="btn-check" type="radio" name="status" id="detailModal_yet" :checked="detailModal.workStatus == statusCodeMap['yet']" @click="detailModal.workStatus = statusCodeMap['yet']"></input>
+								<label class="btn btn-outline-warning" for="detailModal_yet">未完了</label>
+
+								<input class="btn-check" type="radio" name="status" id="detailModal_done" :checked="detailModal.workStatus == statusCodeMap['done']" @click="detailModal.workStatus = statusCodeMap['done']"></input>
+								<label class="btn btn-outline-success" for="detailModal_done">完了済</label>
+
+								<input class="btn-check" type="radio" name="status" id="detailModal_suspended" :checked="detailModal.workStatus == statusCodeMap['suspended']" @click="detailModal.workStatus = statusCodeMap['suspended']"></input>
+								<label class="btn btn-outline-secondary" for="detailModal_suspended">保留</label>
+							</div>
+						</div>
+					</div>
+					<div>
+						<h4>期限日:</h4>
+						<div v-if="!detailModal.editMode && detailModal.deadlineDate != null">
+							<p>{{parseDate(detailModal.deadlineDate)}}</p>
+						</div>
+						<div v-if="detailModal.editMode">
+							<div class="form-group">
+								<input class="form-control" type="date" v-model="detailModal.deadlineDate">
+							</div>
+						</div>
+					</div>
+					<div>
+						<h4>完了日:</h4>
+						<div v-if="!detailModal.editMode && detailModal.completionDate != null">
+							<p>{{parseDate(detailModal.completionDate)}}</p>
+						</div>
+						<div v-if="detailModal.editMode">
+							<div class="form-group">
+								<input class="form-control" type="date" v-model="detailModal.completionDate">
+							</div>
+						</div>
+					</div>
+					<div>
+						<h4>作業担当者:</h4>
+						<div v-if="!detailModal.editMode">
+							<p v-for="worker in detailModal.workerList"> {{worker.lastName}} {{worker.firstName}}</p>
+						</div>
+						<div v-if="detailModal.editMode">
+							<div class="form-group">
+								<input type="hidden" name="worker" :value="detailModal.workerList.map(item => item.id)">
+								<multiselect v-model="detailModal.workerList" :options="userList" :multiple="true" :custom-label="fullName" placeholder="担当者を選択してください" track-by="id"></multiselect>
+								<errors :errors="errors.worker"></errors>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer justify-content-between">
+						<button type="button" class="btn btn-danger mr-auto" id="deleteButton" @click="deleteWork(detailModal.workId)">削除</button>
+					<div>
+				        <button type="button" class="btn btn-secondary" v-if="!detailModal.editMode" data-bs-dismiss="modal">閉じる</button>
+				        <button type="button" class="btn btn-secondary" v-if="detailModal.editMode" @click="edit">中断</button>
+				        <button type="button" class="btn btn-primary" @click="edit" v-if="!detailModal.editMode">編集</button>
+				        <button type="button" class="btn btn-primary" v-if="detailModal.editMode" @click="updateWork">更新</button>
+				     </div>
+    					</div>
+			</div>
+		</div>
+	</div>
+
+	<!--  ステータス画面のモーダルウィンドウ -->
+	<div class="modal" id="status" tabindex="-1" aria-labelledby="button_register">
+		<div class="modal-dialog modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title">状態変更</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="btn-group">
+						<form>
+							<input type="hidden" value="" id="updateStatus" name="workId">
+
+							<input class="btn-check" type="radio" id="yet" value="yet" name="status" :checked="updateStatusTarget.status == statusCodeMap['yet']" @click="setStatus(updateStatusTarget.workId, statusCodeMap['yet'])">
+							<label class="btn btn-outline-warning" for="yet">未完了</label>
+
+							<input class="btn-check" type="radio" id="done" value="done" name="status" :checked="updateStatusTarget.status == statusCodeMap['done']" @click="setStatus(updateStatusTarget.workId, statusCodeMap['done'])">
+							<label class="btn btn-outline-success" for="done">完了済</label>
+
+							<input class="btn-check" type="radio" id="suspended" value="suspended" name="status" :checked="updateStatusTarget.status == statusCodeMap['suspended']" @click="setStatus(updateStatusTarget.workId, statusCodeMap['suspended'])">
+							<label class="btn btn-outline-secondary" for="suspended">保留</label>
+						</form>
+					</div>
+				</div>
+				<div class="modal-footer">
+			        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+			        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="updateStatus()">変更</button>
+    					</div>
+			</div>
+		</div>
+	</div>
+
+		<div class="search-container float-start">
+				<button class="btn btn-outline-primary" @click="filterByUser" :class="{active : sort.isFilteredByUser}">自分の担当作業のみ表示</button>
+		</div>
+		<div class="search-container float-end">
+			<input type="search" class="form-control" v-model="searchWord" placeholder="キーワードで検索">
+		</div>
+		<table id="todoTable" class="todo-index-table table table-dark">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>状態</th>
+				<th class="sort" :class="sortClass('deadlineDate')" @click="sortBy('deadlineDate')">期限日</th>
+				<th class="sort" :class="sortClass('completionDate')" @click="sortBy('completionDate')">完了日</th>
+				<th>作業名</th>
+				<th>作業担当者</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr v-for="(work, index) in filteredWorkList" :data-value="work.id">
+				<td>{{index+1}}</td>
+				<td v-if="work.status == statusCodeMap['yet'] && ( work.deadlineDate == null ? true :  !isOverdue(work.deadlineDate) )">
+					<button class="btn btn-warning statusButton" data-bs-toggle="modal" data-bs-target="#status" @click="setStatus(work.id, work.status)">未</button>
+				</td>
+				<td v-if="work.status == statusCodeMap['yet'] && ( work.deadlineDate != null ? isOverdue(work.deadlineDate) : false )">
+					<button class="btn btn-danger statusButton" data-bs-toggle="modal" data-bs-target="#status" @click="setStatus(work.id, work.status)">未</button>
+				</td>
+				<td v-if="work.status == statusCodeMap['done']"><button class="btn btn-success statusButton" data-bs-toggle="modal" data-bs-target="#status" @click="setStatus(work.id, work.status)">済</button></td>
+				<td v-if="work.status == statusCodeMap['suspended']"><button class="btn btn-secondary statusButton" data-bs-toggle="modal" data-bs-target="#status" @click="setStatus(work.id, work.status)">留</button></td>
+				<td>{{work.deadlineDate == null ? "" : parseDate(work.deadlineDate)}}</td>
+				<td>{{work.completionDate == null ? "" : parseDate(work.completionDate)}}</td>
+				<td>{{work.name}}</td>
+				<td> <p v-for="worker in work.workerList"> {{worker.lastName}} {{worker.firstName}}</p> </td>
+				<td><button class="btn btn-primary detailButton" data-bs-toggle="modal" data-bs-target="#work-detail" @click="fetchDetail(work.id)">詳細</button></td>
+			</tr>
+		</tbody>
+		</table>
+	</div>
+</body>
+</html>
